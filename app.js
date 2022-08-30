@@ -5,8 +5,9 @@ canvas.width = '480';
 canvas.height = '480';
 
 const wallsArray = [];
-const dotsArray = [];
+const foodArray = [];
 let myIntervalId;
+const resultDisplay = document.querySelector('#lives')
 
 const layout = [
     ['|','|','|','|','|','|','|','|','|','|','|','|'],
@@ -33,7 +34,18 @@ class Square {
 
     draw() {
         ctx.fillStyle = 'black';
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.fillRect(this.x * this.width, this.y * this.height, this.width, this.height);
+    }
+}
+
+class Food extends Square {
+    constructor(x, y, width, height, offset){
+        super(x,y,width,height)
+        this.offset = offset;
+    } 
+    draw() {
+        ctx.fillStyle = 'black';
+        ctx.fillRect(this.x * 40 + this.offset, this.y * 40 + this.offset, this.width, this.height);
     }
 }
 
@@ -41,11 +53,11 @@ class Square {
 for (let i = 0; i < layout.length; i++){
     for (let j = 0; j < layout[i].length; j++){
         if(layout[i][j] == '|'){
-        wallsArray.push(new Square(40 * j, 40 * i, 40, 40))
-    } else if (layout[i][j] == '-'){
-        dotsArray.push(new Square(40 * j + 15, 40 * i + 15, 10, 10))
+            wallsArray.push(new Square(j, i, 40, 40))
+        } else if (layout[i][j] == '-'){
+            foodArray.push(new Food(j,i, 10, 10, 15))
+        }
     }
-}
 }
 
 class Pacman {
@@ -66,35 +78,8 @@ class Pacman {
     }
 }
 
-
 const pacman = new Pacman (30,30,'red', 1, 10)
-
-
-document.addEventListener('keydown', (e) => {
-    switch (e.keyCode) {
-      case 38: // up arrow
-        if(layout[pacman.y - 1][pacman.x] != '|'){
-            pacman.y -= 1;
-        }
-        break;
-      case 40: // down arrow
-      if(layout[pacman.y + 1][pacman.x] != '|'){
-        pacman.y += 1;
-    }
-        break;
-      case 37: // left arrow
-      if(layout[pacman.y][pacman.x - 1] != '|'){
-        pacman.x -= 1;
-    }
-        break;
-      case 39: // right arrow
-      if(layout[pacman.y][pacman.x + 1] != '|'){
-        pacman.x += 1;
-      }
-        break;
-    }
-  });
-  
+resultDisplay.textContent = pacman.livesRemaining
 
   class Ghost {
     constructor (width, height, color, x, y){
@@ -131,6 +116,7 @@ document.addEventListener('keydown', (e) => {
                     pacman.livesRemaining--
                     pacman.x = 1
                     pacman.y = 10
+                    resultDisplay.textContent = pacman.livesRemaining
                     break;
                 }
 
@@ -149,6 +135,9 @@ document.addEventListener('keydown', (e) => {
                     pacman.livesRemaining--
                     pacman.x = 1
                     pacman.y = 10
+                    this.x = 6
+                    this.y = 6
+                    resultDisplay.textContent = pacman.livesRemaining
                     break;
                 }
 
@@ -167,6 +156,9 @@ document.addEventListener('keydown', (e) => {
                     pacman.livesRemaining--
                     pacman.x = 1
                     pacman.y = 10
+                    this.x = 6
+                    this.y = 6
+                    resultDisplay.textContent = pacman.livesRemaining
                     break;
                 }
 
@@ -185,6 +177,9 @@ document.addEventListener('keydown', (e) => {
                     pacman.livesRemaining--
                     pacman.x = 1
                     pacman.y = 10
+                    this.x = 6
+                    this.y = 6
+                    resultDisplay.textContent = pacman.livesRemaining
                     break;
                 }
 
@@ -199,14 +194,106 @@ document.addEventListener('keydown', (e) => {
                 break;
         }
         if (pacman.livesRemaining <= 0){
-            alert ('Game over.')
             clearInterval(myIntervalId)
+            canvas.style.display = 'none';
+            document.querySelector('.game-over').style.display = 'block'
         }
     }
   }
 
 const ghost = new Ghost (30,30,'pink', 6, 6)
 // const ghost1 = new Ghost (30,30,'pink', 1, 1)
+
+function win(){
+        clearInterval(myIntervalId)
+        ctx.clearRect(0,0, canvas.width, canvas.height)
+        for (let i = 0; i < wallsArray.length; i++) {
+            wallsArray[i].draw()
+        }
+        for (let i = 0; i < foodArray.length; i++) {
+            foodArray[i].draw()
+        }
+        pacman.draw()
+        ghost.draw()
+        console.log(window, this)
+        //setInterval(() => window.alert('congratulations! you win!'), 1000)
+        canvas.style.display = 'none';
+        document.querySelector('.winnerwinnerchickendinner').style.display = 'block'
+}
+
+document.addEventListener('keydown', (e) => {
+    switch (e.keyCode) {
+      case 38: // up arrow
+        if(layout[pacman.y - 1][pacman.x] != '|'){
+            pacman.y -= 1;
+            
+            if(pacman.x == ghost.x && pacman.y == ghost.y-1){
+                alert ('you got caught')
+            }
+
+            let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
+            if(foundIndex != -1){
+                foodArray.splice(foundIndex, 1)
+            }
+            if(foodArray.length == 0){
+                win()
+            }
+        }
+        break;
+      case 40: // down arrow
+      if(layout[pacman.y + 1][pacman.x] != '|'){
+        pacman.y += 1;
+
+        if(pacman.x == ghost.x && pacman.y == ghost.y+1){
+            alert ('you got caught')
+        }
+
+        let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
+            if(foundIndex != -1){
+                foodArray.splice(foundIndex, 1)
+            }
+            if(foodArray.length == 0){
+                win()
+              }
+        }
+        break;
+      case 37: // left arrow
+      if(layout[pacman.y][pacman.x - 1] != '|'){
+        pacman.x -= 1;
+
+        if(pacman.x == ghost.x-1 && pacman.y == ghost.y){
+            alert ('you got caught')
+        }
+
+        let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
+            if(foundIndex != -1){
+                foodArray.splice(foundIndex, 1)
+            }
+            if(foodArray.length == 0){
+                win()
+              }
+         }
+        break;
+      case 39: // right arrow
+      if(layout[pacman.y][pacman.x + 1] != '|'){
+        pacman.x += 1;
+
+        if(pacman.x == ghost.x+1 && pacman.y == ghost.y){
+            alert ('you got caught')
+        }
+
+        let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
+            if(foundIndex != -1){
+                foodArray.splice(foundIndex, 1)
+            }
+            if(foodArray.length == 0){
+                win()
+              }
+        }
+        break;
+    }
+  });
+
 
 let myFrames = 0;
 myIntervalId = setInterval(() =>{
@@ -219,13 +306,16 @@ myIntervalId = setInterval(() =>{
     for (let i = 0; i < wallsArray.length; i++) {
         wallsArray[i].draw()
     }
-    for (let i = 0; i < dotsArray.length; i++) {
-        dotsArray[i].draw()
+    for (let i = 0; i < foodArray.length; i++) {
+        foodArray[i].draw()
     }
     pacman.draw()
     ghost.draw()
     // ghost1.draw()
+   
 }, 20)
+
+
 
   
 
