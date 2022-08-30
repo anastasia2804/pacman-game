@@ -1,25 +1,12 @@
 const canvas = document.querySelector('#canvas');
 const ctx = canvas.getContext('2d')
 
-canvas.width = '600';
-canvas.height = '600';
-
-class Square {
-    constructor(x, y, width, height) {
-        this.x = x,
-        this.y = y,
-        this.width = width,
-        this.height = height
-    }
-
-    draw() {
-        ctx.fillStyle = 'black';
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-    }
-}
+canvas.width = '480';
+canvas.height = '480';
 
 const wallsArray = [];
 const dotsArray = [];
+let myIntervalId;
 
 const layout = [
     ['|','|','|','|','|','|','|','|','|','|','|','|'],
@@ -36,6 +23,21 @@ const layout = [
     ['|','|','|','|','|','|','|','|','|','|','|','|'],
 ]
 
+class Square {
+    constructor(x, y, width, height) {
+        this.x = x,
+        this.y = y,
+        this.width = width,
+        this.height = height
+    }
+
+    draw() {
+        ctx.fillStyle = 'black';
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+}
+
+
 for (let i = 0; i < layout.length; i++){
     for (let j = 0; j < layout[i].length; j++){
         if(layout[i][j] == '|'){
@@ -46,14 +48,6 @@ for (let i = 0; i < layout.length; i++){
 }
 }
 
-// for (let i = 0; i < wallsArray.length; i++) {
-//             wallsArray[i].draw()
-//         }
-
-// for (let i = 0; i < dotsArray.length; i++) {
-//             dotsArray[i].draw()
-//         }
-
 class Pacman {
     constructor (width, height, color, x, y){
         this.width = width,
@@ -61,6 +55,7 @@ class Pacman {
         this.color = color,
         this.x = x,
         this.y = y
+        this.livesRemaining = 3
     }
 
     draw(){
@@ -69,17 +64,11 @@ class Pacman {
         ctx.fillRect(this.x * 40 + 5, this.y * 40 + 5, this.width, this.height)
         ctx.closePath()
     }
-
-    // update () {
-    //     this.draw()
-    //     this.x += this.speedX
-    //     this.y +=this.speedY
-    //   }
 }
+
 
 const pacman = new Pacman (30,30,'red', 1, 10)
 
-// pacman.draw()
 
 document.addEventListener('keydown', (e) => {
     switch (e.keyCode) {
@@ -137,7 +126,15 @@ document.addEventListener('keydown', (e) => {
     move () {
         switch (this.currentDirection) {
             case 'down':
-                if(this.movesRemaining > 0 && layout[this.y + 1][this.x] != '|'){
+                if (pacman.x == this.x && pacman.y == this.y-1){
+                    alert ('you got caught')
+                    pacman.livesRemaining--
+                    pacman.x = 1
+                    pacman.y = 10
+                    break;
+                }
+
+                if (this.movesRemaining > 0 && layout[this.y + 1][this.x] != '|'){
                     this.y += 1;
                     this.movesRemaining--
                 } else {
@@ -145,7 +142,16 @@ document.addEventListener('keydown', (e) => {
                     this.chooseMovesRemaining();
                 }
                 break;
+
             case 'up':
+                if (pacman.x == this.x && pacman.y == this.y+1){
+                    alert ('you got caught')
+                    pacman.livesRemaining--
+                    pacman.x = 1
+                    pacman.y = 10
+                    break;
+                }
+
                 if(this.movesRemaining > 0 && layout[this.y - 1][this.x] != '|'){
                     this.y -= 1;
                     this.movesRemaining--
@@ -153,9 +159,17 @@ document.addEventListener('keydown', (e) => {
                     this.chooseDirection();
                     this.chooseMovesRemaining();
                 }
-                //this.y -= 1;
                 break;
+
             case 'left':
+                if (pacman.x == this.x+1 && pacman.y == this.y){
+                    alert ('you got caught')
+                    pacman.livesRemaining--
+                    pacman.x = 1
+                    pacman.y = 10
+                    break;
+                }
+
                 if(this.movesRemaining > 0 && layout[this.y][this.x - 1] != '|'){
                     this.x -= 1;
                     this.movesRemaining--
@@ -166,6 +180,14 @@ document.addEventListener('keydown', (e) => {
                 //this.x -= 1;
                 break;
             case 'right':
+                if (pacman.x == this.x-1 && pacman.y == this.y){
+                    alert ('you got caught')
+                    pacman.livesRemaining--
+                    pacman.x = 1
+                    pacman.y = 10
+                    break;
+                }
+
                 if(this.movesRemaining > 0 && layout[this.y][this.x + 1] != '|'){
                     this.x += 1;
                     this.movesRemaining--
@@ -176,22 +198,18 @@ document.addEventListener('keydown', (e) => {
                 //this.x += 1;
                 break;
         }
+        if (pacman.livesRemaining <= 0){
+            alert ('Game over.')
+            clearInterval(myIntervalId)
+        }
     }
   }
 
 const ghost = new Ghost (30,30,'pink', 6, 6)
 // const ghost1 = new Ghost (30,30,'pink', 1, 1)
 
-function collisionDetectorGhostMoves () {
-    if (pacman.x == ghost.x+1 && pacman.x == ghost.y && ghost.currentDirection == 'left'){
-        alert ('you got caught')
-    }
-
-}
-
-// ghost.draw()
 let myFrames = 0;
-setInterval(() =>{
+myIntervalId = setInterval(() =>{
     myFrames++
     if(myFrames % 10 == 0){
         ghost.move()
