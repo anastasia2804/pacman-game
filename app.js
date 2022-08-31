@@ -109,7 +109,7 @@ livesDisplay.textContent = pacman.livesRemaining
         ctx.closePath()
     }
 
-    youGotCaught(){
+    gotCaught () {
         alert ('you got caught')
         pacman.livesRemaining--
         pacman.x = 1
@@ -117,19 +117,13 @@ livesDisplay.textContent = pacman.livesRemaining
         this.x = 6
         this.y = 6
         livesDisplay.textContent = pacman.livesRemaining
-    }
+        }
 
     move () {
         switch (this.currentDirection) {
             case 'down':
                 if (pacman.x == this.x && pacman.y == this.y+1){
-                    alert ('you got caught')
-                    pacman.livesRemaining--
-                    pacman.x = 1
-                    pacman.y = 10
-                    this.x = 6
-                    this.y = 6
-                    livesDisplay.textContent = pacman.livesRemaining
+                    this.gotCaught () 
                     break;
                 }
 
@@ -144,13 +138,7 @@ livesDisplay.textContent = pacman.livesRemaining
 
             case 'up':
                 if (pacman.x == this.x && pacman.y == this.y-1){
-                    alert ('you got caught')
-                    pacman.livesRemaining--
-                    pacman.x = 1
-                    pacman.y = 10
-                    this.x = 6
-                    this.y = 6
-                    livesDisplay.textContent = pacman.livesRemaining
+                    this.gotCaught () 
                     break;
                 }
 
@@ -165,13 +153,7 @@ livesDisplay.textContent = pacman.livesRemaining
 
             case 'left':
                 if (pacman.x == this.x-1 && pacman.y == this.y){
-                    alert ('you got caught')
-                    pacman.livesRemaining--
-                    pacman.x = 1
-                    pacman.y = 10
-                    this.x = 6
-                    this.y = 6
-                    livesDisplay.textContent = pacman.livesRemaining
+                    this.gotCaught () 
                     break;
                 }
 
@@ -182,17 +164,11 @@ livesDisplay.textContent = pacman.livesRemaining
                     this.chooseDirection();
                     this.chooseMovesRemaining();
                 }
-                //this.x -= 1;
                 break;
+
             case 'right':
                 if (pacman.x == this.x+1 && pacman.y == this.y){
-                    alert ('you got caught')
-                    pacman.livesRemaining--
-                    pacman.x = 1
-                    pacman.y = 10
-                    this.x = 6
-                    this.y = 6
-                    livesDisplay.textContent = pacman.livesRemaining
+                    this.gotCaught () 
                     break;
                 }
 
@@ -203,7 +179,6 @@ livesDisplay.textContent = pacman.livesRemaining
                     this.chooseDirection();
                     this.chooseMovesRemaining();
                 }
-                //this.x += 1;
                 break;
         }
         if (pacman.livesRemaining <= 0){
@@ -215,7 +190,6 @@ livesDisplay.textContent = pacman.livesRemaining
   }
 
 const ghost = new Ghost (30,30,'pink', 6, 6)
-// const ghost1 = new Ghost (30,30,'pink', 1, 1)
 
 function win(){
         clearInterval(myIntervalId)
@@ -228,8 +202,6 @@ function win(){
         }
         pacman.draw()
         ghost.draw()
-        console.log(window, this)
-        //setInterval(() => window.alert('congratulations! you win!'), 1000)
         canvas.style.display = 'none';
         document.querySelector('.winnerwinnerchickendinner').style.display = 'block'
 }
@@ -237,95 +209,65 @@ function win(){
 let points  = 0;
 pointsDisplay.textContent = points;
 
+function pacmanEatsDots () {
+    let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
+    if(foundIndex != -1){
+        foodArray.splice(foundIndex, 1)
+        points ++
+        pointsDisplay.textContent = points
+    }
+    if(foodArray.length == 0){
+        win()
+    }
+}
+
 document.addEventListener('keydown', (e) => {
     switch (e.keyCode) {
       case 38: // up arrow
         if(layout[pacman.y - 1][pacman.x] != '|'){
+            if(pacman.x == ghost.x && pacman.y - 1 == ghost.y){
+                ghost.gotCaught ()
+            }
             pacman.y -= 1;
-            
-            if(pacman.x == ghost.x && pacman.y == ghost.y-1){
-                alert ('you got caught')
-            }
-
-            let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
-            if(foundIndex != -1){
-                foodArray.splice(foundIndex, 1)
-                points ++
-                pointsDisplay.textContent = points
-            }
-            if(foodArray.length == 0){
-                win()
-            }
+            pacmanEatsDots ()
         }
+
         break;
       case 40: // down arrow
       if(layout[pacman.y + 1][pacman.x] != '|'){
-        pacman.y += 1;
-
-        if(pacman.x == ghost.x && pacman.y == ghost.y+1){
-            alert ('you got caught')
+        if(pacman.x == ghost.x && pacman.y + 1 == ghost.y){
+            ghost.gotCaught ()
         }
-
-        let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
-            if(foundIndex != -1){
-                foodArray.splice(foundIndex, 1)
-                points ++
-                pointsDisplay.textContent = points
-            }
-            if(foodArray.length == 0){
-                win()
-              }
+            pacman.y += 1;
+            pacmanEatsDots ()
         }
         break;
       case 37: // left arrow
       if(layout[pacman.y][pacman.x - 1] != '|'){
-        pacman.x -= 1;
-
-        if(pacman.x == ghost.x-1 && pacman.y == ghost.y){
-            alert ('you got caught')
+        if(pacman.x - 1 == ghost.x && pacman.y == ghost.y){
+            ghost.gotCaught ()
         }
-
-        let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
-            if(foundIndex != -1){
-                foodArray.splice(foundIndex, 1)
-                points ++
-                pointsDisplay.textContent = points
-            }
-            if(foodArray.length == 0){
-                win()
-              }
+            pacman.x -= 1;
+            pacmanEatsDots ()
          }
         break;
       case 39: // right arrow
       if(layout[pacman.y][pacman.x + 1] != '|'){
-        pacman.x += 1;
-
-        if(pacman.x == ghost.x+1 && pacman.y == ghost.y){
-            alert ('you got caught')
+        if(pacman.x + 1 == ghost.x && pacman.y == ghost.y){
+            ghost.gotCaught ()
         }
-
-        let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
-            if(foundIndex != -1){
-                foodArray.splice(foundIndex, 1)
-                points ++
-                pointsDisplay.textContent = points
-            }
-            if(foodArray.length == 0){
-                win()
-              }
+        pacman.x += 1;
+        pacmanEatsDots ()
         }
         break;
     }
   });
-
-
 
 let myFrames = 0;
 myIntervalId = setInterval(() =>{
     myFrames++
     if(myFrames % 10 == 0){
         ghost.move()
-        // ghost1.move()
     }
     ctx.clearRect(0,0, canvas.width, canvas.height)
     for (let i = 0; i < wallsArray.length; i++) {
@@ -336,8 +278,6 @@ myIntervalId = setInterval(() =>{
     }
     pacman.draw()
     ghost.draw()
-    // ghost1.draw()
-   
 }, 20)
 
 
