@@ -7,7 +7,8 @@ canvas.height = '480';
 const wallsArray = [];
 const foodArray = [];
 let myIntervalId;
-const resultDisplay = document.querySelector('#lives')
+const livesDisplay = document.querySelector('#lives');
+const pointsDisplay = document.querySelector('#points');
 
 const layout = [
     ['|','|','|','|','|','|','|','|','|','|','|','|'],
@@ -79,7 +80,7 @@ class Pacman {
 }
 
 const pacman = new Pacman (30,30,'red', 1, 10)
-resultDisplay.textContent = pacman.livesRemaining
+livesDisplay.textContent = pacman.livesRemaining
 
   class Ghost {
     constructor (width, height, color, x, y){
@@ -108,15 +109,27 @@ resultDisplay.textContent = pacman.livesRemaining
         ctx.closePath()
     }
 
+    youGotCaught(){
+        alert ('you got caught')
+        pacman.livesRemaining--
+        pacman.x = 1
+        pacman.y = 10
+        this.x = 6
+        this.y = 6
+        livesDisplay.textContent = pacman.livesRemaining
+    }
+
     move () {
         switch (this.currentDirection) {
             case 'down':
-                if (pacman.x == this.x && pacman.y == this.y-1){
+                if (pacman.x == this.x && pacman.y == this.y+1){
                     alert ('you got caught')
                     pacman.livesRemaining--
                     pacman.x = 1
                     pacman.y = 10
-                    resultDisplay.textContent = pacman.livesRemaining
+                    this.x = 6
+                    this.y = 6
+                    livesDisplay.textContent = pacman.livesRemaining
                     break;
                 }
 
@@ -130,14 +143,14 @@ resultDisplay.textContent = pacman.livesRemaining
                 break;
 
             case 'up':
-                if (pacman.x == this.x && pacman.y == this.y+1){
+                if (pacman.x == this.x && pacman.y == this.y-1){
                     alert ('you got caught')
                     pacman.livesRemaining--
                     pacman.x = 1
                     pacman.y = 10
                     this.x = 6
                     this.y = 6
-                    resultDisplay.textContent = pacman.livesRemaining
+                    livesDisplay.textContent = pacman.livesRemaining
                     break;
                 }
 
@@ -151,14 +164,14 @@ resultDisplay.textContent = pacman.livesRemaining
                 break;
 
             case 'left':
-                if (pacman.x == this.x+1 && pacman.y == this.y){
+                if (pacman.x == this.x-1 && pacman.y == this.y){
                     alert ('you got caught')
                     pacman.livesRemaining--
                     pacman.x = 1
                     pacman.y = 10
                     this.x = 6
                     this.y = 6
-                    resultDisplay.textContent = pacman.livesRemaining
+                    livesDisplay.textContent = pacman.livesRemaining
                     break;
                 }
 
@@ -172,14 +185,14 @@ resultDisplay.textContent = pacman.livesRemaining
                 //this.x -= 1;
                 break;
             case 'right':
-                if (pacman.x == this.x-1 && pacman.y == this.y){
+                if (pacman.x == this.x+1 && pacman.y == this.y){
                     alert ('you got caught')
                     pacman.livesRemaining--
                     pacman.x = 1
                     pacman.y = 10
                     this.x = 6
                     this.y = 6
-                    resultDisplay.textContent = pacman.livesRemaining
+                    livesDisplay.textContent = pacman.livesRemaining
                     break;
                 }
 
@@ -221,6 +234,9 @@ function win(){
         document.querySelector('.winnerwinnerchickendinner').style.display = 'block'
 }
 
+let points  = 0;
+pointsDisplay.textContent = points;
+
 document.addEventListener('keydown', (e) => {
     switch (e.keyCode) {
       case 38: // up arrow
@@ -234,6 +250,8 @@ document.addEventListener('keydown', (e) => {
             let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
             if(foundIndex != -1){
                 foodArray.splice(foundIndex, 1)
+                points ++
+                pointsDisplay.textContent = points
             }
             if(foodArray.length == 0){
                 win()
@@ -251,6 +269,8 @@ document.addEventListener('keydown', (e) => {
         let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
             if(foundIndex != -1){
                 foodArray.splice(foundIndex, 1)
+                points ++
+                pointsDisplay.textContent = points
             }
             if(foodArray.length == 0){
                 win()
@@ -268,6 +288,8 @@ document.addEventListener('keydown', (e) => {
         let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
             if(foundIndex != -1){
                 foodArray.splice(foundIndex, 1)
+                points ++
+                pointsDisplay.textContent = points
             }
             if(foodArray.length == 0){
                 win()
@@ -285,6 +307,8 @@ document.addEventListener('keydown', (e) => {
         let foundIndex = foodArray.findIndex(food => food.x == pacman.x && food.y == pacman.y)
             if(foundIndex != -1){
                 foodArray.splice(foundIndex, 1)
+                points ++
+                pointsDisplay.textContent = points
             }
             if(foodArray.length == 0){
                 win()
@@ -293,6 +317,7 @@ document.addEventListener('keydown', (e) => {
         break;
     }
   });
+
 
 
 let myFrames = 0;
