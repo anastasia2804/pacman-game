@@ -110,6 +110,17 @@ class Pacman {
         ctx.fillRect(this.x * 40 + 5, this.y * 40 + 5, this.width, this.height)
         ctx.closePath()
     }
+    gotCaught (myGhost, myGhost1) {
+        alert ('you got caught')
+        this.livesRemaining--
+        this.x = 1
+        this.y = 10
+        myGhost.x = 6
+        myGhost.y = 6
+        myGhost1.x = 10
+        myGhost1.y = 2;
+        livesDisplay.textContent = this.livesRemaining
+    }
 }
 
 const pacman = new Pacman (30,30,'red', 1, 10)
@@ -142,21 +153,13 @@ livesDisplay.textContent = pacman.livesRemaining
         ctx.closePath()
     }
 
-    gotCaught () {
-        alert ('you got caught')
-        pacman.livesRemaining--
-        pacman.x = 1
-        pacman.y = 10
-        this.x = 6
-        this.y = 6
-        livesDisplay.textContent = pacman.livesRemaining
-        }
+    
 
     move () {
         switch (this.currentDirection) {
             case 'down':
                 if (pacman.x == this.x && pacman.y == this.y+1){
-                    this.gotCaught () 
+                    pacman.gotCaught(this) 
                     break;
                 }
 
@@ -171,7 +174,7 @@ livesDisplay.textContent = pacman.livesRemaining
 
             case 'up':
                 if (pacman.x == this.x && pacman.y == this.y-1){
-                    this.gotCaught () 
+                    pacman.gotCaught(this) 
                     break;
                 }
 
@@ -186,7 +189,7 @@ livesDisplay.textContent = pacman.livesRemaining
 
             case 'left':
                 if (pacman.x == this.x-1 && pacman.y == this.y){
-                    this.gotCaught () 
+                    pacman.gotCaught(this) 
                     break;
                 }
 
@@ -201,7 +204,7 @@ livesDisplay.textContent = pacman.livesRemaining
 
             case 'right':
                 if (pacman.x == this.x+1 && pacman.y == this.y){
-                    this.gotCaught () 
+                    pacman.gotCaught(this) 
                     break;
                 }
 
@@ -227,32 +230,10 @@ const ghost = new Ghost (30,30,'pink', 6, 6)
 const ghost1 = new Ghost (30,30,'pink', 10, 1)
 let currentLevel = 1;
 function win(){
-        // clearInterval(myIntervalId)
-        // ctx.clearRect(0,0, canvas.width, canvas.height)
-        // for (let i = 0; i < wallsArray.length; i++) {
-        //     wallsArray[i].draw()
-        // }
-        // for (let i = 0; i < foodArray.length; i++) {
-        //     foodArray[i].draw()
-        // }
-        // pacman.draw()
-        // ghost.draw()
-        // canvas.style.display = 'none';
-        // document.querySelector('.winnerwinnerchickendinner').style.display = 'block'
-
-        // clearInterval(myIntervalId)
-        //ctx.clearRect(0,0, canvas.width, canvas.height)
+        
         if(currentLevel == 2) {
             clearInterval(myIntervalId)
             ctx.clearRect(0,0, canvas.width, canvas.height)
-            // for (let i = 0; i < wallsArray.length; i++) {
-            //     wallsArray[i].draw()
-            // }
-            // for (let i = 0; i < foodArray.length; i++) {
-            //     foodArray[i].draw()
-            // }
-            // pacman.draw()
-            // ghost.draw()
             canvas.style.display = 'none';
             document.querySelector('.winnerwinnerchickendinner').style.display = 'block'
         }
@@ -270,24 +251,6 @@ function win(){
         ghost.y = 4
         ghost1.x = 10
         ghost1.y = 11
-
-       
-
-        //ON LEVEL CHANGE
-
-        //switch layout to level2
-
-        //change canvas size
-        //canvas.width = 600
-        //canvas.height = 600
-
-        //re-create food
-
-        //re-create walls
-
-        //re-set pacman position
-
-        //re-set ghost position
 }
 
 let points  = 0;
@@ -310,9 +273,9 @@ document.addEventListener('keydown', (e) => {
       case 38: // up arrow
         if(layout[pacman.y - 1][pacman.x] != '|'){
             if(pacman.x == ghost.x && pacman.y - 1 == ghost.y){
-                ghost.gotCaught ()
+                pacman.gotCaught(ghost) 
             } else if (pacman.x == ghost1.x && pacman.y - 1 == ghost1.y){
-                ghost1.gotCaught ()
+                pacman.gotCaught(ghost1) 
             }
             pacman.y -= 1;
             pacmanEatsDots ()
@@ -322,9 +285,9 @@ document.addEventListener('keydown', (e) => {
       case 40: // down arrow
       if(layout[pacman.y + 1][pacman.x] != '|'){
         if(pacman.x == ghost.x && pacman.y + 1 == ghost.y){
-            ghost.gotCaught ()
+            pacman.gotCaught (ghost) 
         } else if (pacman.x == ghost1.x && pacman.y + 1 == ghost1.y){
-            ghost1.gotCaught ()
+            pacman.gotCaught (ghost1) 
         }
             pacman.y += 1;
             pacmanEatsDots ()
@@ -333,9 +296,9 @@ document.addEventListener('keydown', (e) => {
       case 37: // left arrow
       if(layout[pacman.y][pacman.x - 1] != '|'){
         if(pacman.x - 1 == ghost.x && pacman.y == ghost.y){
-            ghost.gotCaught ()
+            pacman.gotCaught (ghost) 
         } else if (pacman.x - 1 == ghost1.x && pacman.y == ghost1.y){
-            ghost1.gotCaught ()
+            pacman.gotCaught (ghost1) 
         }
             pacman.x -= 1;
             pacmanEatsDots ()
@@ -344,9 +307,9 @@ document.addEventListener('keydown', (e) => {
       case 39: // right arrow
       if(layout[pacman.y][pacman.x + 1] != '|'){
         if(pacman.x + 1 == ghost.x && pacman.y == ghost.y){
-            ghost.gotCaught ()
+            pacman.gotCaught (ghost) 
         } else if (pacman.x + 1 == ghost1.x && pacman.y == ghost1.y){
-            ghost1.gotCaught ()
+            pacman.gotCaught (ghost1) 
         }
         pacman.x += 1;
         pacmanEatsDots ()
