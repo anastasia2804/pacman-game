@@ -4,13 +4,13 @@ const ctx = canvas.getContext('2d')
 canvas.width = '480';
 canvas.height = '480';
 
-const wallsArray = [];
-const foodArray = [];
+let wallsArray = [];
+let foodArray = [];
 let myIntervalId;
 const livesDisplay = document.querySelector('#lives');
 const pointsDisplay = document.querySelector('#points');
 
-const layout = [
+const level1 = [
     ['|','|','|','|','|','|','|','|','|','|','|','|'],
     ['|','-','-','-','-','-','-','|','-','-','-','|'],
     ['|','-','|','-','|','-','|','|','|','|','-','|'],
@@ -24,6 +24,26 @@ const layout = [
     ['|','1','-','-','-','-','-','|','-','-','-','|'],
     ['|','|','|','|','|','|','|','|','|','|','|','|'],
 ]
+
+const level2 = [
+    ['|','|','|','|','|','|','|','|','|','|','|','|','|','|','|'],
+    ['|','-','-','-','-','-','-','-','-','-','-','-','-','-','|'],
+    ['|','-','|','|','|','-','|','|','|','|','-','|','|','-','|'],
+    ['|','-','|','-','-','-','|','-','-','-','-','-','|','-','|'],
+    ['|','-','|','-','|','-','|','|','-','|','|','-','|','-','|'],
+    ['|','-','|','-','|','-','-','-','-','-','|','|','|','-','|'],
+    ['|','-','-','-','-','-','-','|','-','-','|','-','|','-','|'],
+    ['|','-','|','-','|','-','|','|','|','-','|','-','|','-','|'],
+    ['|','-','|','-','|','-','-','|','-','-','-','-','-','-','|'],
+    ['|','-','|','|','|','-','-','-','-','-','|','-','|','-','|'],
+    ['|','-','|','-','|','|','-','|','|','-','|','-','|','-','|'],
+    ['|','-','|','-','-','-','-','-','|','-','-','-','|','-','|'],
+    ['|','-','|','|','-','|','|','|','|','-','|','|','|','-','|'],
+    ['|','1','-','-','-','-','-','-','-','-','-','-','-','-','|'],
+    ['|','|','|','|','|','|','|','|','|','|','|','|','|','|','|']
+]
+
+let layout = level1;
 
 class Square {
     constructor(x, y, width, height) {
@@ -50,7 +70,7 @@ class Food extends Square {
     }
 }
 
-
+function outlineLayout (){
 for (let i = 0; i < layout.length; i++){
     for (let j = 0; j < layout[i].length; j++){
         if(layout[i][j] == '|'){
@@ -60,6 +80,19 @@ for (let i = 0; i < layout.length; i++){
         }
     }
 }
+}
+
+outlineLayout ()
+
+function drawLayout () {
+for (let i = 0; i < wallsArray.length; i++) {
+        wallsArray[i].draw()
+    }
+    for (let i = 0; i < foodArray.length; i++) {
+        foodArray[i].draw()
+    }
+}
+
 
 class Pacman {
     constructor (width, height, color, x, y){
@@ -185,25 +218,76 @@ livesDisplay.textContent = pacman.livesRemaining
             clearInterval(myIntervalId)
             canvas.style.display = 'none';
             document.querySelector('.game-over').style.display = 'block'
+            document.querySelector('.quote').style.display = 'block'
         }
     }
   }
 
 const ghost = new Ghost (30,30,'pink', 6, 6)
-
+const ghost1 = new Ghost (30,30,'pink', 10, 1)
+let currentLevel = 1;
 function win(){
-        clearInterval(myIntervalId)
-        ctx.clearRect(0,0, canvas.width, canvas.height)
-        for (let i = 0; i < wallsArray.length; i++) {
-            wallsArray[i].draw()
+        // clearInterval(myIntervalId)
+        // ctx.clearRect(0,0, canvas.width, canvas.height)
+        // for (let i = 0; i < wallsArray.length; i++) {
+        //     wallsArray[i].draw()
+        // }
+        // for (let i = 0; i < foodArray.length; i++) {
+        //     foodArray[i].draw()
+        // }
+        // pacman.draw()
+        // ghost.draw()
+        // canvas.style.display = 'none';
+        // document.querySelector('.winnerwinnerchickendinner').style.display = 'block'
+
+        // clearInterval(myIntervalId)
+        //ctx.clearRect(0,0, canvas.width, canvas.height)
+        if(currentLevel == 2) {
+            clearInterval(myIntervalId)
+            ctx.clearRect(0,0, canvas.width, canvas.height)
+            // for (let i = 0; i < wallsArray.length; i++) {
+            //     wallsArray[i].draw()
+            // }
+            // for (let i = 0; i < foodArray.length; i++) {
+            //     foodArray[i].draw()
+            // }
+            // pacman.draw()
+            // ghost.draw()
+            canvas.style.display = 'none';
+            document.querySelector('.winnerwinnerchickendinner').style.display = 'block'
         }
-        for (let i = 0; i < foodArray.length; i++) {
-            foodArray[i].draw()
-        }
-        pacman.draw()
-        ghost.draw()
-        canvas.style.display = 'none';
-        document.querySelector('.winnerwinnerchickendinner').style.display = 'block'
+
+        layout = level2
+        currentLevel = 2
+        canvas.width = 600
+        canvas.height = 600
+        foodArray = []
+        wallsArray = []
+        outlineLayout()
+        pacman.x = 1
+        pacman.y = 13
+        ghost.x = 5
+        ghost.y = 4
+        ghost1.x = 10
+        ghost1.y = 11
+
+       
+
+        //ON LEVEL CHANGE
+
+        //switch layout to level2
+
+        //change canvas size
+        //canvas.width = 600
+        //canvas.height = 600
+
+        //re-create food
+
+        //re-create walls
+
+        //re-set pacman position
+
+        //re-set ghost position
 }
 
 let points  = 0;
@@ -227,6 +311,8 @@ document.addEventListener('keydown', (e) => {
         if(layout[pacman.y - 1][pacman.x] != '|'){
             if(pacman.x == ghost.x && pacman.y - 1 == ghost.y){
                 ghost.gotCaught ()
+            } else if (pacman.x == ghost1.x && pacman.y - 1 == ghost1.y){
+                ghost1.gotCaught ()
             }
             pacman.y -= 1;
             pacmanEatsDots ()
@@ -237,6 +323,8 @@ document.addEventListener('keydown', (e) => {
       if(layout[pacman.y + 1][pacman.x] != '|'){
         if(pacman.x == ghost.x && pacman.y + 1 == ghost.y){
             ghost.gotCaught ()
+        } else if (pacman.x == ghost1.x && pacman.y + 1 == ghost1.y){
+            ghost1.gotCaught ()
         }
             pacman.y += 1;
             pacmanEatsDots ()
@@ -246,6 +334,8 @@ document.addEventListener('keydown', (e) => {
       if(layout[pacman.y][pacman.x - 1] != '|'){
         if(pacman.x - 1 == ghost.x && pacman.y == ghost.y){
             ghost.gotCaught ()
+        } else if (pacman.x - 1 == ghost1.x && pacman.y == ghost1.y){
+            ghost1.gotCaught ()
         }
             pacman.x -= 1;
             pacmanEatsDots ()
@@ -255,6 +345,8 @@ document.addEventListener('keydown', (e) => {
       if(layout[pacman.y][pacman.x + 1] != '|'){
         if(pacman.x + 1 == ghost.x && pacman.y == ghost.y){
             ghost.gotCaught ()
+        } else if (pacman.x + 1 == ghost1.x && pacman.y == ghost1.y){
+            ghost1.gotCaught ()
         }
         pacman.x += 1;
         pacmanEatsDots ()
@@ -268,6 +360,7 @@ myIntervalId = setInterval(() =>{
     myFrames++
     if(myFrames % 10 == 0){
         ghost.move()
+        ghost1.move()
     }
     ctx.clearRect(0,0, canvas.width, canvas.height)
     for (let i = 0; i < wallsArray.length; i++) {
@@ -278,6 +371,7 @@ myIntervalId = setInterval(() =>{
     }
     pacman.draw()
     ghost.draw()
+    ghost1.draw()
 }, 20)
 
 
