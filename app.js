@@ -110,15 +110,13 @@ class Pacman {
         ctx.fillRect(this.x * 40 + 5, this.y * 40 + 5, this.width, this.height)
         ctx.closePath()
     }
-    gotCaught (myGhost, myGhost1) {
+    gotCaught (myGhost) {
         alert ('you got caught')
         this.livesRemaining--
         this.x = 1
         this.y = 10
         myGhost.x = 6
         myGhost.y = 6
-        myGhost1.x = 10
-        myGhost1.y = 2;
         livesDisplay.textContent = this.livesRemaining
     }
 }
